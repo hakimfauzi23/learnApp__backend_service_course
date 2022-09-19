@@ -1,17 +1,16 @@
 <?php
 
-use illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Http;
 
 function getUser($userId)
 {
     $url = env('SERVICE_USER_URL') . 'users/' . $userId;
-
     try {
         $response = Http::timeout(10)->get($url);
         $data = $response->json();
         $data['http_code'] = $response->getStatusCode();
         return $data;
-    } catch (\Throwable $th) {
+    } catch (\Exception $ex) {
         return [
             'status' => 'error',
             'http_code' => 500,
