@@ -134,7 +134,7 @@ class ChapterController extends Controller
         $chapter->delete();
         return response()->json([
             'status' => 'success',
-            'data' => 'chapter delted'
+            'data' => 'chapter deleted'
         ]);
     }
 

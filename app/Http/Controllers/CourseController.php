@@ -140,7 +140,7 @@ class CourseController extends Controller
             ], 400);
         }
 
-        $course = Mentor::find($id);
+        $course = Course::find($id);
         if (!$course) {
             return response()->json([
                 'status' => 'error',
