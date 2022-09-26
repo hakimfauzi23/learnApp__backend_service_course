@@ -15,7 +15,7 @@ class MyCourseController extends Controller
         $myCourses = MyCourse::query();
 
         $userId = $request->query('user_id');
-        $myCourses->when($userId, function($query) use ($userId) {
+        $myCourses->when($userId, function ($query) use ($userId) {
             return $query->where('user_id', '=', $userId);
         });
 
@@ -72,8 +72,45 @@ class MyCourseController extends Controller
             ], 409);
         }
 
+        if ($course->type === 'premium') {
 
+            if ($course->price === 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Price can\'t be 0'
+                ], 405);
+            }
+
+            $order = postOrder([
+                'user' => $user['data'],
+                'course' => $course->toArray()
+            ]);
+
+            if ($order['status'] === 'error') {
+                return response()->json([
+                    'status' => $order['status'],
+                    'message' => $order['message']
+                ], $order['http_code']);
+            }
+
+            return response()->json([
+                'status' => $order['status'],
+                'data' => $order['data']
+            ]);
+        } else {
+            $myCourse = MyCourse::create($data);
+            return response()->json([
+                'status' => 'success',
+                'data' => $myCourse
+            ]);
+        }
+    }
+
+    public function createPremiumAccess(Request $request)
+    {
+        $data = $request->all();
         $myCourse = MyCourse::create($data);
+
         return response()->json([
             'status' => 'success',
             'data' => $myCourse
